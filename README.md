@@ -39,18 +39,22 @@ For each recurring task, you enter a few estimates:
 The tool then calculates:
 
 - **Hours saved per month** = minutes per run × runs per month × people × share handled ÷ 60
-- **Net hours per month** = hours saved − upkeep
-- **First-year value** = net hours per month × 12 × confidence − build effort
+- **Expected hours saved** = hours saved × confidence
   *(confidence: high = 1.0, medium = 0.7, low = 0.4)*
+- **Net hours per month** = expected hours saved − upkeep
+- **First-year value** = net hours per month × 12 − build effort
 - **Payback time** = build effort ÷ net hours per month
 
 Tasks are ranked by **first-year value**.
 
+Confidence only discounts the savings, because that's the uncertain part. Upkeep and build time count in full. So being less sure never makes a task look better. (The first version got this wrong; see [`BUILD_LOG.md`](BUILD_LOG.md).)
+
 **Worked example** (the row above):
 - Hours saved: 45 × 4 × 3 × 0.7 ÷ 60 = **6.3 hours/month**
-- Net: 6.3 − 1 = **5.3 hours/month**
-- First-year value: 5.3 × 12 × 0.7 − 10 ≈ **34.5 hours**
-- Payback: 10 ÷ 5.3 ≈ **1.9 months**
+- Expected (medium confidence): 6.3 × 0.7 = **4.41 hours/month**
+- Net: 4.41 − 1 = **3.41 hours/month**
+- First-year value: 3.41 × 12 − 10 ≈ **30.9 hours**
+- Payback: 10 ÷ 3.41 ≈ **2.9 months**
 
 **"Adds new capacity" tasks** are work the team has never had time to do, so there is no current time to save. For these, you enter what the work would be worth in hours per month, and the rest of the math stays the same.
 
@@ -60,6 +64,9 @@ Tasks are ranked by **first-year value**.
 - **Low confidence:** the estimate is a guess. Check with the people who do the task before building.
 - **Consider retiring:** for automations already running, upkeep now takes as much time as the automation saves.
 - **Not worth it yet:** first-year value is below zero.
+- **Quick win:** pays back its build time within a month.
+
+Full rules, edge cases and expected results are in [`SPEC.md`](SPEC.md).
 
 ---
 
@@ -95,7 +102,7 @@ Built with **Claude Code**, using a spec-first approach:
 
 | Day | Goal |
 |---|---|
-| 1 | Write `SPEC.md`, `CLAUDE.md` and the sample data |
+| 1 | Write `SPEC.md`, `CLAUDE.md` and the sample data *(done)* |
 | 2 | Scoring logic, with tests for the math |
 | 3 | Ranked table and add/edit form |
 | 4 | Flags, "Why this rank?", and odd cases (blank fields, zero values, negative value) |
